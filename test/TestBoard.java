@@ -25,84 +25,95 @@ import static org.hamcrest.core.IsCollectionContaining.hasItem;
 import static org.junit.Assert.*;
 
 @RunWith(Parameterized.class)
-public class TestBoard
-{
-	@Parameters
-	public static Collection<Object[]> generateParams()
-	{
-		List<Object[]> params = new ArrayList<Object[]>();
-		params.add(new Object[] { Board.class });
-		return params;
-	}
-
+public class TestBoard {
 	protected Class<?> clazz;
 
-	public TestBoard(Class<?> clazz)
-	{
+	public TestBoard(final Class<?> clazz) {
 		this.clazz = clazz;
 	}
 
-	private IBoard fromLevelFile(String filename)
-	{
-		try
-		{
-			Method m = clazz.getMethod("fromLevelFile", String.class);
-			return (IBoard) m.invoke(clazz, filename);
-		} catch (Exception e)
-		{
+	@Parameters
+	public static Collection<Object[]> generateParams() {
+		final List<Object[]> params = new ArrayList<Object[]>();
+		params.add(new Object[]{Board.class});
+		return params;
+	}
+
+	private static byte[] toBytes(final IBoard board) {
+		try {
+			final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			final ObjectOutput out = new ObjectOutputStream(bos);
+			out.writeObject(board);
+			out.close();
+			return bos.toByteArray();
+		} catch (final Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	private IBoard fromLevelRepresentation(List<String> lvl)
-	{
-		try
-		{
-			Method m = clazz.getMethod("fromLevelRepresentation", List.class);
+	private static IBoard fromBytes(final byte[] bytes) {
+		try {
+			final ByteArrayInputStream ios = new ByteArrayInputStream(bytes);
+			final ObjectInput in = new ObjectInputStream(ios);
+			final IBoard board = (IBoard) in.readObject();
+			in.close();
+			return board;
+		} catch (final Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private IBoard fromLevelFile(final String filename) {
+		try {
+			final Method m = clazz.getMethod("fromLevelFile", String.class);
+			return (IBoard) m.invoke(clazz, filename);
+		} catch (final Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private IBoard fromLevelRepresentation(final List<String> lvl) {
+		try {
+			final Method m = clazz.getMethod("fromLevelRepresentation", List.class);
 			return (IBoard) m.invoke(clazz, lvl);
-		} catch (Exception e)
-		{
+		} catch (final Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 
 	@Test
-	public void equalsContract()
-	{
+	public void equalsContract() {
 		EqualsVerifier.forClass(clazz)
 				.suppress(Warning.REFERENCE_EQUALITY, Warning.NONFINAL_FIELDS)
 				.verify();
 	}
 
 	@Test
-	public void saneHashCode()
-	{
-		IBoard board = Board.fromLevelRepresentation(Arrays.asList(
+	public void saneHashCode() {
+		final IBoard board = Board.fromLevelRepresentation(Arrays.asList(
 				"###",
 				"#p#",
 				"###"));
 
-		int expectedHash = board.hashCode();
+		final int expectedHash = board.hashCode();
 
-		for (int i = 0; i < 10; i++)
-		{
+		for (int i = 0; i < 10; i++) {
 			board.executeMove(Move.STAY);
 			board.executeMove(Move.LEFT);
 			board.executeMove(Move.RIGHT);
 			board.executeMove(Move.UP);
 			board.executeMove(Move.DOWN);
 		}
-		int actualHash = board.hashCode();
+		final int actualHash = board.hashCode();
 
 		assertEquals(expectedHash, actualHash);
 	}
 
 	@Test
-	public void deepCopyBoard()
-	{
+	public void deepCopyBoard() {
 
-		IBoard a = fromLevelFile(Constants.ASSET_PATH + "/default.lvl");
-		IBoard b = a.deepCopy();
+		final IBoard a = fromLevelFile(Constants.ASSET_PATH + "/default.lvl");
+		final IBoard b = a.deepCopy();
 
 		assertEquals(a, b);
 
@@ -117,11 +128,10 @@ public class TestBoard
 	}
 
 	@Test
-	public void deepCopyBoardHashCode()
-	{
+	public void deepCopyBoardHashCode() {
 
-		IBoard a = fromLevelFile(Constants.ASSET_PATH + "/default.lvl");
-		IBoard b = a.deepCopy();
+		final IBoard a = fromLevelFile(Constants.ASSET_PATH + "/default.lvl");
+		final IBoard b = a.deepCopy();
 
 		assertEquals(a.hashCode(), b.hashCode());
 
@@ -136,11 +146,10 @@ public class TestBoard
 	}
 
 	@Test
-	public void copyBoardHashCode()
-	{
+	public void copyBoardHashCode() {
 
-		IBoard a = fromLevelFile(Constants.ASSET_PATH + "/default.lvl");
-		IBoard b = a.copy();
+		final IBoard a = fromLevelFile(Constants.ASSET_PATH + "/default.lvl");
+		final IBoard b = a.copy();
 
 		assertEquals(a.hashCode(), b.hashCode());
 
@@ -155,11 +164,10 @@ public class TestBoard
 	}
 
 	@Test
-	public void copyIsActuallyDifferent()
-	{
+	public void copyIsActuallyDifferent() {
 
-		IBoard a = fromLevelFile(Constants.ASSET_PATH + "/default.lvl");
-		IBoard b = a.copy();
+		final IBoard a = fromLevelFile(Constants.ASSET_PATH + "/default.lvl");
+		final IBoard b = a.copy();
 
 		assertEquals(a, b);
 
@@ -169,10 +177,9 @@ public class TestBoard
 	}
 
 	@Test
-	public void copyWithDifferentTickIsEqual()
-	{
+	public void copyWithDifferentTickIsEqual() {
 
-		IBoard a = fromLevelRepresentation(
+		final IBoard a = fromLevelRepresentation(
 				Arrays.asList(
 						"####",
 						"#p.#",
@@ -180,9 +187,9 @@ public class TestBoard
 						"#..#",
 						"#.p#",
 						"####"
-						));
+				));
 
-		IBoard b = a.copy();
+		final IBoard b = a.copy();
 
 		assertEquals(a, b);
 
@@ -204,10 +211,9 @@ public class TestBoard
 	}
 
 	@Test
-	public void copyWithSeedsIsEqualAgainAfterBlossoming()
-	{
+	public void copyWithSeedsIsEqualAgainAfterBlossoming() {
 
-		IBoard a = fromLevelRepresentation(
+		final IBoard a = fromLevelRepresentation(
 				Arrays.asList(
 						"####",
 						"#p.#",
@@ -215,9 +221,9 @@ public class TestBoard
 						"#..#",
 						"#.p#",
 						"####"
-						));
+				));
 
-		IBoard b = a.copy();
+		final IBoard b = a.copy();
 
 		assertEquals(a, b);
 
@@ -241,10 +247,9 @@ public class TestBoard
 	}
 
 	@Test
-	public void copyBoard()
-	{
-		IBoard a = fromLevelFile(Constants.ASSET_PATH + "/default.lvl");
-		IBoard b = a.copy();
+	public void copyBoard() {
+		final IBoard a = fromLevelFile(Constants.ASSET_PATH + "/default.lvl");
+		final IBoard b = a.copy();
 
 		assertEquals(a, b);
 
@@ -259,72 +264,67 @@ public class TestBoard
 	}
 
 	@Test
-	public void fewPossibleMoves()
-	{
-		IBoard a = fromLevelRepresentation(
+	public void fewPossibleMoves() {
+		final IBoard a = fromLevelRepresentation(
 				Arrays.asList(
 						"###",
 						"#p#",
 						"###"
-						));
+				));
 
-		List<Move> moves = a.getPossibleMoves();
+		final List<Move> moves = a.getPossibleMoves();
 		assertThat(moves, hasItem(Move.STAY));
 		assertThat(moves, hasItem(Move.SPAWN));
 	}
 
 	@Test
-	public void seedOnTopOfSeed()
-	{
-		IBoard a = fromLevelRepresentation(
+	public void seedOnTopOfSeed() {
+		final IBoard a = fromLevelRepresentation(
 				Arrays.asList(
 						"###",
 						"#p#",
 						"###"
-						));
+				));
 
 		a.executeMove(Move.SPAWN);
 		assertFalse(a.executeMove(Move.SPAWN));
 	}
 
 	@Test
-	public void seedOnTopOfSeedTwoPlayers()
-	{
-		IBoard a = fromLevelRepresentation(
+	public void seedOnTopOfSeedTwoPlayers() {
+		final IBoard a = fromLevelRepresentation(
 				Arrays.asList(
 						"####",
 						"#pp#",
 						"####"
-						));
+				));
 
 		a.executeMove(Move.SPAWN); // p0
 		assertFalse(a.executeMove(Move.LEFT)); // p1 cannot go right b/c of
-												// seed;
+		// seed;
 	}
 
 	@Test
-	public void seedCounter()
-	{
-		IBoard a = fromLevelRepresentation(
+	public void seedCounter() {
+		final IBoard a = fromLevelRepresentation(
 				Arrays.asList(
 						"###",
 						"#p#",
 						"###"
-						));
+				));
 
 		assertTrue(a.executeMove(Move.SPAWN));
 		assertEquals(Unicorn.MAX_SEEDS - 1, a.getUnicorns().get(0).seeds);
 	}
 
 	@Test
-	public void seedCounterResets()
-	{
-		IBoard a = fromLevelRepresentation(
+	public void seedCounterResets() {
+		final IBoard a = fromLevelRepresentation(
 				Arrays.asList(
 						"######",
 						"#p...#",
 						"######"
-						));
+				));
 
 		assertTrue(a.executeMove(Move.SPAWN));
 		assertEquals(Unicorn.MAX_SEEDS - 1, a.getUnicorns().get(0).seeds);
@@ -342,14 +342,13 @@ public class TestBoard
 	}
 
 	@Test
-	public void noMoreThanMaxSeeds()
-	{
-		IBoard a = fromLevelRepresentation(
+	public void noMoreThanMaxSeeds() {
+		final IBoard a = fromLevelRepresentation(
 				Arrays.asList(
 						"#########",
 						"#p......#",
 						"#########"
-						));
+				));
 
 		assertTrue(a.executeMove(Move.SPAWN));
 		assertTrue(a.executeMove(Move.RIGHT));
@@ -369,17 +368,16 @@ public class TestBoard
 	}
 
 	@Test
-	public void updateSeedsAndRainbows()
-	{
-		IBoard a = fromLevelRepresentation(
+	public void updateSeedsAndRainbows() {
+		final IBoard a = fromLevelRepresentation(
 				Arrays.asList(
 						"###",
 						"#p#",
 						"###"
-						));
+				));
 		a.setEndCondition(new NoEnd());
 
-		V pos = a.getCurrentUnicorn().pos;
+		final V pos = a.getCurrentUnicorn().pos;
 
 		a.executeMove(Move.SPAWN); // Seed.DEFAULT_FUSE - 1 | 4
 		a.executeMove(Move.STAY); // Seed.DEFAULT_FUSE - 2 | 3
@@ -390,33 +388,22 @@ public class TestBoard
 		for (int i = 0; i < Seed.DEFAULT_FUSE - 5; i++)
 			a.executeMove(Move.STAY);
 
-		Rainbow expectedRainbow = new Rainbow(pos, Rainbow.DEFAULT_DURATION - 1);
+		final Rainbow expectedRainbow = new Rainbow(pos, Rainbow.DEFAULT_DURATION - 1);
 
 		assertEquals(1, a.getRainbows().size());
 		assertThat(a.at(pos), hasItem(expectedRainbow));
 		assertEquals(expectedRainbow, a.getRainbows().get(0));
 	}
 
-	class Holder<T>
-	{
-		public T obj;
-
-		public Holder()
-		{
-			obj = null;
-		}
-	}
-
 	@Test
-	public void updateClouds()
-	{
-		List<String> lvl = new ArrayList<String>();
+	public void updateClouds() {
+		final List<String> lvl = new ArrayList<String>();
 
 		lvl.add("####");
 		lvl.add("#pc#");
 		lvl.add("####");
 
-		IBoard a = fromLevelRepresentation(lvl);
+		final IBoard a = fromLevelRepresentation(lvl);
 
 		assertEquals(1, a.getClouds().size());
 
@@ -434,15 +421,14 @@ public class TestBoard
 	}
 
 	@Test
-	public void rainbowsStopAtClouds()
-	{
-		List<String> lvl = new ArrayList<String>();
+	public void rainbowsStopAtClouds() {
+		final List<String> lvl = new ArrayList<String>();
 
 		lvl.add("#####");
 		lvl.add("#pc.#");
 		lvl.add("#####");
 
-		IBoard a = fromLevelRepresentation(lvl);
+		final IBoard a = fromLevelRepresentation(lvl);
 
 		assertEquals(1, a.getClouds().size());
 
@@ -460,15 +446,14 @@ public class TestBoard
 	}
 
 	@Test
-	public void checkRemovable()
-	{
-		List<String> lvl = new ArrayList<String>();
+	public void checkRemovable() {
+		final List<String> lvl = new ArrayList<String>();
 
 		lvl.add("########");
 		lvl.add("#p...cf#");
 		lvl.add("########");
 
-		IBoard a = fromLevelRepresentation(lvl);
+		final IBoard a = fromLevelRepresentation(lvl);
 
 		assertTrue(a.isRemovable(new V(5, 1)));
 		assertTrue(a.executeMove(Move.RIGHT));
@@ -482,29 +467,25 @@ public class TestBoard
 	}
 
 	@Test
-	public void updateUnicorns()
-	{
-		List<String> lvl = new ArrayList<String>();
+	public void updateUnicorns() {
+		final List<String> lvl = new ArrayList<String>();
 
 		lvl.add("######");
 		lvl.add("#p..p#");
 		lvl.add("######");
 
-		IBoard a = fromLevelRepresentation(lvl);
+		final IBoard a = fromLevelRepresentation(lvl);
 
 		// whether the real unicorn is sent sailing, is only testable via a
 		// custom
 		// endcondition
 		final Holder<List<Unicorn>> actualSailing = new Holder<>();
 
-		a.setEndCondition(new EndCondition()
-		{
+		a.setEndCondition(new EndCondition() {
 			@Override
-			public boolean hasEnded(IBoard board, List<Cloud> evaporated,
-					List<Unicorn> sailing)
-			{
-				if (sailing.size() > 0)
-				{
+			public boolean hasEnded(final IBoard board, final List<Cloud> evaporated,
+			                        final List<Unicorn> sailing) {
+				if (sailing.size() > 0) {
 					actualSailing.obj = sailing;
 					return true;
 				}
@@ -512,20 +493,17 @@ public class TestBoard
 			}
 
 			@Override
-			public int getWinner()
-			{
+			public int getWinner() {
 				return -1;
 			}
 
 			@Override
-			public EndCondition copy()
-			{
+			public EndCondition copy() {
 				return this;
 			}
 
 			@Override
-			public String getOutcome()
-			{
+			public String getOutcome() {
 				return "TEST";
 			}
 		});
@@ -545,12 +523,11 @@ public class TestBoard
 	}
 
 	@Test
-	public void testFileRoundtrip() throws IOException
-	{
-		File lvlFile = new File(Files.createTempDirectory(null).toString(),
+	public void testFileRoundtrip() throws IOException {
+		final File lvlFile = new File(Files.createTempDirectory(null).toString(),
 				"test.lvl");
 
-		Board expectedBoard = Board.fromLevelRepresentation(
+		final Board expectedBoard = Board.fromLevelRepresentation(
 				Arrays.asList(
 						"#######",
 						"#.pcf.#",
@@ -561,15 +538,14 @@ public class TestBoard
 		expectedBoard.executeMove(Move.SPAWN);
 
 		Board.toFile(lvlFile.toString(), expectedBoard);
-		IBoard actualBoard = Board.fromFile(lvlFile.toString());
+		final IBoard actualBoard = Board.fromFile(lvlFile.toString());
 
 		assertEquals(expectedBoard, actualBoard);
 	}
 
 	@Test
-	public void whatsAt()
-	{
-		IBoard a = fromLevelRepresentation(
+	public void whatsAt() {
+		final IBoard a = fromLevelRepresentation(
 				Arrays.asList(
 						"#######",
 						"#.pcf.#",
@@ -600,9 +576,8 @@ public class TestBoard
 	}
 
 	@Test
-	public void fountainsCorrect()
-	{
-		IBoard a = fromLevelRepresentation(
+	public void fountainsCorrect() {
+		final IBoard a = fromLevelRepresentation(
 				Arrays.asList(
 						"#######",
 						"#..p..#",
@@ -615,52 +590,20 @@ public class TestBoard
 	}
 
 	@Test
-	public void blankIsNotWalkable()
-	{
-		List<String> lines = new ArrayList<>();
+	public void blankIsNotWalkable() {
+		final List<String> lines = new ArrayList<>();
 		lines.add("#####");
 		lines.add("#p f#");
 		lines.add("#####");
 
-		IBoard board = fromLevelRepresentation(lines);
+		final IBoard board = fromLevelRepresentation(lines);
 
 		assertFalse(board.isPassable(new V(2, 1)));
 	}
 
-	private static byte[] toBytes(IBoard board)
-	{
-		try
-		{
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			ObjectOutput out = new ObjectOutputStream(bos);
-			out.writeObject(board);
-			out.close();
-			return bos.toByteArray();
-		} catch (Exception e)
-		{
-			throw new RuntimeException(e);
-		}
-	}
-
-	private static IBoard fromBytes(byte[] bytes)
-	{
-		try
-		{
-			ByteArrayInputStream ios = new ByteArrayInputStream(bytes);
-			ObjectInput in = new ObjectInputStream(ios);
-			IBoard board = (IBoard) in.readObject();
-			in.close();
-			return board;
-		} catch (Exception e)
-		{
-			throw new RuntimeException(e);
-		}
-	}
-
 	@Test
-	public void isSerializable() throws Exception
-	{
-		IBoard board = fromLevelRepresentation(
+	public void isSerializable() throws Exception {
+		final IBoard board = fromLevelRepresentation(
 				Arrays.asList(
 						"#######",
 						"#.pcf.#",
@@ -672,9 +615,8 @@ public class TestBoard
 	}
 
 	@Test
-	public void isSerializable2() throws Exception
-	{
-		IBoard board = fromLevelRepresentation(
+	public void isSerializable2() throws Exception {
+		final IBoard board = fromLevelRepresentation(
 				Arrays.asList(
 						"#######",
 						"#ppppp#",
@@ -690,9 +632,8 @@ public class TestBoard
 	}
 
 	@Test
-	public void isSerializable3() throws Exception
-	{
-		IBoard board = fromLevelFile(Constants.ASSET_PATH + "/default.lvl");
+	public void isSerializable3() throws Exception {
+		final IBoard board = fromLevelFile(Constants.ASSET_PATH + "/default.lvl");
 		board.executeMove(Move.LEFT);
 		board.executeMove(Move.RIGHT);
 		board.executeMove(Move.DOWN);
@@ -704,15 +645,14 @@ public class TestBoard
 	}
 
 	@Test
-	public void doesNotCrashIfNoFountains()
-	{
-		IBoard board = fromLevelRepresentation(
+	public void doesNotCrashIfNoFountains() {
+		final IBoard board = fromLevelRepresentation(
 				Arrays.asList(
 						"####",
 						"#p.#",
 						"####"));
 
-		PointCollecting fc = new PointCollecting();
+		final PointCollecting fc = new PointCollecting();
 		board.setEndCondition(fc);
 
 		board.executeMove(Move.RIGHT);
@@ -722,15 +662,14 @@ public class TestBoard
 	}
 
 	@Test
-	public void oneUnicornOneFlag()
-	{
-		IBoard board = fromLevelRepresentation(
+	public void oneUnicornOneFlag() {
+		final IBoard board = fromLevelRepresentation(
 				Arrays.asList(
 						"####",
 						"#pf#",
 						"####"));
 
-		PointCollecting fc = new PointCollecting();
+		final PointCollecting fc = new PointCollecting();
 		board.setEndCondition(fc);
 
 		assertEquals(-1, board.getFountains().get(0).lastVisitedBy);
@@ -743,14 +682,13 @@ public class TestBoard
 	}
 
 	@Test
-	public void twoUnicornsOneFlag()
-	{
-		IBoard board = fromLevelRepresentation(
+	public void twoUnicornsOneFlag() {
+		final IBoard board = fromLevelRepresentation(
 				Arrays.asList(
 						"#####",
 						"#pfp#",
 						"#####"));
-		PointCollecting fc = new PointCollecting();
+		final PointCollecting fc = new PointCollecting();
 		board.setEndCondition(fc);
 
 		assertEquals(-1, board.getFountains().get(0).lastVisitedBy);
@@ -778,14 +716,13 @@ public class TestBoard
 	}
 
 	@Test
-	public void twoUnicornsOneFlagDraw()
-	{
-		IBoard board = fromLevelRepresentation(
+	public void twoUnicornsOneFlagDraw() {
+		final IBoard board = fromLevelRepresentation(
 				Arrays.asList(
 						"#####",
 						"#pfp#",
 						"#####"));
-		PointCollecting fc = new PointCollecting();
+		final PointCollecting fc = new PointCollecting();
 		board.setEndCondition(fc);
 
 		assertEquals(-1, board.getFountains().get(0).lastVisitedBy);
@@ -819,15 +756,14 @@ public class TestBoard
 	}
 
 	@Test
-	public void twoUnicornsOnOneFlagSimultaenously()
-	{
-		IBoard board = fromLevelRepresentation(
+	public void twoUnicornsOnOneFlagSimultaenously() {
+		final IBoard board = fromLevelRepresentation(
 				Arrays.asList(
 						"#####",
 						"#pfp#",
 						"#####"));
 
-		PointCollecting fc = new PointCollecting();
+		final PointCollecting fc = new PointCollecting();
 		board.setEndCondition(fc);
 
 		assertEquals(Fountain.LAST_VISITED_BY_DEFAULT,
@@ -854,15 +790,14 @@ public class TestBoard
 	}
 
 	@Test
-	public void moveLimit()
-	{
-		IBoard board = fromLevelRepresentation(
+	public void moveLimit() {
+		final IBoard board = fromLevelRepresentation(
 				Arrays.asList(
 						"#######",
 						"#p.f.p#",
 						"#######"));
 
-		PointCollecting fc = new PointCollecting(2);
+		final PointCollecting fc = new PointCollecting(2);
 		board.setEndCondition(fc);
 
 		// tick 0
@@ -883,5 +818,13 @@ public class TestBoard
 		// with a score of 1
 		assertEquals(1, fc.getScore(0));
 		assertEquals(0, fc.getScore(1));
+	}
+
+	class Holder<T> {
+		public T obj;
+
+		public Holder() {
+			obj = null;
+		}
 	}
 }

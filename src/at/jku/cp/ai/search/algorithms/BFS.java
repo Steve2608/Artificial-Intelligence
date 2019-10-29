@@ -20,9 +20,8 @@ public class BFS implements Search {
 		fringe.add(start);
 		final Set<Node> closed = new HashSet<>();
 
-		Node curr;
 		do {
-			curr = fringe.poll();
+			final Node curr = fringe.poll();
 			for (final Node n : curr.adjacent()) {
 				if (!closed.contains(n)) {
 					if (endPredicate.test(n)) return n;

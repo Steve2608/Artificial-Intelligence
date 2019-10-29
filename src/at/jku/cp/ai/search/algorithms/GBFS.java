@@ -25,9 +25,8 @@ public class GBFS implements Search {
 		final Set<Node> closed = new HashSet<>();
 		closed.add(start);
 
-		Node current;
 		do {
-			current = fringe.poll().s;
+			final Node current = fringe.poll().s;
 			if (endPredicate.test(current)) return current;
 
 			for (final Node n : current.adjacent()) {

@@ -369,7 +369,6 @@ public class VisualizeBoards extends Display {
 		private Point2D m_start = new Point2D.Double();
 		private Point2D m_end = new Point2D.Double();
 		private Point2D m_cur = new Point2D.Double();
-		private int m_bias = 150;
 
 		public void run(final double frac) {
 			final TupleSet ts = m_vis.getFocusGroup(Visualization.FOCUS_ITEMS);
@@ -378,6 +377,7 @@ public class VisualizeBoards extends Display {
 
 			if (frac == 0.0) {
 				int xbias = 0, ybias = 0;
+				final int m_bias = 150;
 				switch (m_orientation) {
 					case Constants.ORIENT_LEFT_RIGHT:
 						xbias = m_bias;
@@ -394,7 +394,7 @@ public class VisualizeBoards extends Display {
 				}
 
 				final VisualItem vi = (VisualItem) ts.tuples().next();
-				m_cur.setLocation(getWidth() / 2, getHeight() / 2);
+				m_cur.setLocation(getWidth() / 2.0, getHeight() / 2.0);
 				getAbsoluteCoordinate(m_cur, m_start);
 				m_end.setLocation(vi.getX() + xbias, vi.getY() + ybias);
 			} else {

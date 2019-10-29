@@ -14,14 +14,20 @@ import java.util.List;
 import static org.junit.Assert.fail;
 
 @RunWith(Parameterized.class)
-public class TestMoves
-{
-	@Parameters
-	public static Collection<Object[]> generateParams()
-	{
+public class TestMoves {
+	private Board masterBoard;
+	private List<Move> expectedValid;
 
-		List<Object[]> params = new ArrayList<Object[]>();
-		
+	public TestMoves(final List<String> lvl, final List<Move> expected) {
+		masterBoard = Board.fromLevelRepresentation(lvl);
+		expectedValid = expected;
+	}
+
+	@Parameters
+	public static Collection<Object[]> generateParams() {
+
+		final List<Object[]> params = new ArrayList<Object[]>();
+
 		params.add(new Object[]{
 				Arrays.asList(
 						"#####",
@@ -29,75 +35,75 @@ public class TestMoves
 						"#.p.#",
 						"#...#",
 						"#####"
-						),
+				),
 				Arrays.asList(Move.values())
 		});
-		
+
 		params.add(new Object[]{
 				Arrays.asList(
 						"###",
 						"#p#",
 						"#.#",
 						"###"
-						),
+				),
 				Arrays.asList(Move.STAY, Move.SPAWN, Move.DOWN)
 		});
-				
+
 		params.add(new Object[]{
 				Arrays.asList(
 						"###",
 						"#.#",
 						"#p#",
 						"###"
-						),
+				),
 				Arrays.asList(Move.STAY, Move.SPAWN, Move.UP)
 		});
-		
+
 		params.add(new Object[]{
 				Arrays.asList(
 						"####",
 						"#p.#",
 						"####"
-						),
+				),
 				Arrays.asList(Move.STAY, Move.SPAWN, Move.RIGHT)
 		});
-		
+
 		params.add(new Object[]{
 				Arrays.asList(
 						"####",
 						"#.p#",
 						"####"
-						),
+				),
 				Arrays.asList(Move.STAY, Move.SPAWN, Move.LEFT)
 		});
-		
+
 		params.add(new Object[]{
 				Arrays.asList(
 						"###",
 						"#p#",
 						"###"
-						),
+				),
 				Arrays.asList(Move.STAY, Move.SPAWN)
 		});
-		
+
 		params.add(new Object[]{
 				Arrays.asList(
 						"#####",
 						"#*pf#",
 						"#####"
-						),
+				),
 				Arrays.asList(Move.STAY, Move.SPAWN, Move.RIGHT)
 		});
-		
+
 		params.add(new Object[]{
 				Arrays.asList(
 						"#####",
 						"#*p*#",
 						"#####"
-						),
+				),
 				Arrays.asList(Move.STAY, Move.SPAWN)
 		});
-		
+
 		params.add(new Object[]{
 				Arrays.asList(
 						"#####",
@@ -105,10 +111,10 @@ public class TestMoves
 						"#*p*#",
 						"#.*.#",
 						"#####"
-						),
+				),
 				Arrays.asList(Move.STAY, Move.SPAWN)
 		});
-		
+
 		params.add(new Object[]{
 				Arrays.asList(
 						"#####",
@@ -116,53 +122,37 @@ public class TestMoves
 						"#fpf#",
 						"#fff#",
 						"#####"
-						),
+				),
 				Arrays.asList(Move.STAY, Move.SPAWN, Move.LEFT, Move.RIGHT, Move.UP, Move.DOWN)
 		});
-		
+
 		return params;
 	}
 
-	private Board masterBoard;
-	private List<Move> expectedValid;
-
-	public TestMoves(List<String> lvl, List<Move> expected)
-	{
-		this.masterBoard = Board.fromLevelRepresentation(lvl);
-		this.expectedValid = expected;
-	}
-	
 	@Test
-	public void allMovesActuallyPossible()
-	{
-		for(Move move: expectedValid)
-		{
-			IBoard board = masterBoard.copy();
-			
+	public void allMovesActuallyPossible() {
+		for (final Move move : expectedValid) {
+			final IBoard board = masterBoard.copy();
+
 			// ***can't*** execute valid move? --> goto fail!
-			if (!board.executeMove(move))
-			{
+			if (!board.executeMove(move)) {
 				fail("could NOT execute '" + move + "' !");
 			}
 		}
-		
-		List<Move> expectedInvalid = new ArrayList<>();
-		
-		for(Move move: Move.values())
-		{
-			if(!expectedValid.contains(move))
-			{
+
+		final List<Move> expectedInvalid = new ArrayList<>();
+
+		for (final Move move : Move.values()) {
+			if (!expectedValid.contains(move)) {
 				expectedInvalid.add(move);
 			}
 		}
 
-		for(Move move: expectedInvalid)
-		{
-			IBoard board = masterBoard.copy();
-			
+		for (final Move move : expectedInvalid) {
+			final IBoard board = masterBoard.copy();
+
 			// ***can*** execute invalid move? --> goto fail!
-			if (board.executeMove(move))
-			{
+			if (board.executeMove(move)) {
 				fail("could execute '" + move + "' despite being forbidden !");
 			}
 		}

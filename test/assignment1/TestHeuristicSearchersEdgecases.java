@@ -17,42 +17,36 @@ import org.junit.rules.Timeout;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
 
 public class TestHeuristicSearchersEdgecases {
 	@Rule
 	public TestRule globalTimeout = Timeout.seconds(1);
-	
+
 	@Test
 	public void gbfsNoInfiniteLoop() {
-		noInfiniteLoop(new GBFS(new Function<Node, Double>(){
-			@Override
-			public Double apply(Node t) {
-				return 0.0;
-			}
-		}));
+		noInfiniteLoop(new GBFS(t -> 0.0));
 	}
-	
-	private void noInfiniteLoop(Search searcher) {
-		IBoard board = Board.fromLevelRepresentation(Arrays.asList(
+
+	private void noInfiniteLoop(final Search searcher) {
+		final IBoard board = Board.fromLevelRepresentation(Arrays.asList(
 				"####",
 				"#p.#",
 				"####"));
 
-		IBoard startBoard = board.copy();
-		Predicate<Node> endReached = b -> false;
-		
-		Node startNode = new IBoardNode(startBoard);
-		Node endNode = searcher.search(startNode, endReached);
+		final IBoard startBoard = board.copy();
+		final Predicate<Node> endReached = b -> false;
 
-		List<Node> path = PathUtils.getPath(endNode);
-		List<Node> actualBoardNodes = PathUtils.getStates(path);
-		List<IBoard> actualBoardStates = PathUtils.getStates(actualBoardNodes);
+		final Node startNode = new IBoardNode(startBoard);
+		final Node endNode = searcher.search(startNode, endReached);
+
+		final List<Node> path = PathUtils.getPath(endNode);
+		final List<Node> actualBoardNodes = PathUtils.getStates(path);
+		final List<IBoard> actualBoardStates = PathUtils.getStates(actualBoardNodes);
 		TestUtils.assertListEquals(Collections.emptyList(), actualBoardStates);
-		
-		List<Move> actualMoveSequence = PathUtils.getActions(path);
+
+		final List<Move> actualMoveSequence = PathUtils.getActions(path);
 		TestUtils.assertListEquals(Collections.emptyList(), actualMoveSequence);
 	}
 }

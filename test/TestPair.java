@@ -16,12 +16,10 @@ import static org.junit.Assert.assertNotEquals;
 
 public class TestPair {
 	@Test
-	public void hashCodesEqual()
-	{
-		for (Move move : Move.values())
-		{
-			Pair<IBoard, Move> a = new Pair<>(Board.fromLevelFile(Constants.ASSET_PATH + "/default.lvl"), move);
-			Pair<IBoard, Move> b = new Pair<>(Board.fromLevelFile(Constants.ASSET_PATH + "/default.lvl"), move);
+	public void hashCodesEqual() {
+		for (final Move move : Move.values()) {
+			final Pair<IBoard, Move> a = new Pair<>(Board.fromLevelFile(Constants.ASSET_PATH + "/default.lvl"), move);
+			final Pair<IBoard, Move> b = new Pair<>(Board.fromLevelFile(Constants.ASSET_PATH + "/default.lvl"), move);
 
 			assertEquals(a, b);
 			assertEquals(a.hashCode(), b.hashCode());
@@ -29,32 +27,29 @@ public class TestPair {
 	}
 
 	@Test
-	public void hashCodesNotEqualBCMoves()
-	{
-		Pair<IBoard, Move> a = new Pair<>(Board.fromLevelFile(Constants.ASSET_PATH + "/default.lvl"), Move.DOWN);
-		Pair<IBoard, Move> b = new Pair<>(Board.fromLevelFile(Constants.ASSET_PATH + "/default.lvl"), Move.UP);
+	public void hashCodesNotEqualBCMoves() {
+		final Pair<IBoard, Move> a = new Pair<>(Board.fromLevelFile(Constants.ASSET_PATH + "/default.lvl"), Move.DOWN);
+		final Pair<IBoard, Move> b = new Pair<>(Board.fromLevelFile(Constants.ASSET_PATH + "/default.lvl"), Move.UP);
 
 		assertNotEquals(a, b);
 		assertNotEquals(a.hashCode(), b.hashCode());
 	}
 
 	@Test
-	public void hashCodesNotEqualBCBoards()
-	{
-		Pair<IBoard, Move> a = new Pair<>(Board.fromLevelFile(Constants.ASSET_PATH + "/arena1.lvl"), Move.STAY);
-		Pair<IBoard, Move> b = new Pair<>(Board.fromLevelFile(Constants.ASSET_PATH + "/arena2.lvl"), Move.STAY);
+	public void hashCodesNotEqualBCBoards() {
+		final Pair<IBoard, Move> a = new Pair<>(Board.fromLevelFile(Constants.ASSET_PATH + "/arena1.lvl"), Move.STAY);
+		final Pair<IBoard, Move> b = new Pair<>(Board.fromLevelFile(Constants.ASSET_PATH + "/arena2.lvl"), Move.STAY);
 
 		assertNotEquals(a, b);
 		assertNotEquals(a.hashCode(), b.hashCode());
 	}
 
 	@Test
-	public void useInMap()
-	{
-		Board a = Board.fromLevelFile(Constants.ASSET_PATH + "/arena1.lvl");
-		Board b = Board.fromLevelFile(Constants.ASSET_PATH + "/arena2.lvl");
+	public void useInMap() {
+		final Board a = Board.fromLevelFile(Constants.ASSET_PATH + "/arena1.lvl");
+		final Board b = Board.fromLevelFile(Constants.ASSET_PATH + "/arena2.lvl");
 
-		Map<Pair<IBoard, Move>, Integer> qmatrix = new HashMap<>();
+		final Map<Pair<IBoard, Move>, Integer> qmatrix = new HashMap<>();
 		qmatrix.put(new Pair<>(a.copy(), Move.DOWN), 1);
 		qmatrix.put(new Pair<>(b.copy(), Move.UP), 2);
 
@@ -65,24 +60,23 @@ public class TestPair {
 
 		assertEquals(2, qmatrix.size());
 
-		assertEquals((int) 1, (int) qmatrix.get(new Pair<>(a.copy(), Move.DOWN)));
-		assertEquals((int) 2, (int) qmatrix.get(new Pair<>(b.copy(), Move.UP)));
+		assertEquals(1, (int) qmatrix.get(new Pair<>(a.copy(), Move.DOWN)));
+		assertEquals(2, (int) qmatrix.get(new Pair<>(b.copy(), Move.UP)));
 	}
 
 	@Test
-	public void useInMap2()
-	{
-		Board a = Board.fromLevelFile(Constants.ASSET_PATH + "/default.lvl");
-		Board b = Board.fromLevelFile(Constants.ASSET_PATH + "/default.lvl");
+	public void useInMap2() {
+		final Board a = Board.fromLevelFile(Constants.ASSET_PATH + "/default.lvl");
+		final Board b = Board.fromLevelFile(Constants.ASSET_PATH + "/default.lvl");
 
-		IBoard aKey = a.copy();
-		IBoard bKey = b.copy();
+		final IBoard aKey = a.copy();
+		final IBoard bKey = b.copy();
 
-		Map<Pair<IBoard, Move>, Integer> qmatrix = new HashMap<>();
+		final Map<Pair<IBoard, Move>, Integer> qmatrix = new HashMap<>();
 		qmatrix.put(new Pair<>(aKey, Move.DOWN), 1);
 		qmatrix.put(new Pair<>(bKey, Move.UP), 2);
 
-		Random random = new Random(0L);
+		final Random random = new Random(0L);
 		for (int i = 0; i < 100; i++) {
 			a.executeMove(Move.values()[random.nextInt(Move.values().length)]);
 			b.executeMove(Move.values()[random.nextInt(Move.values().length)]);
@@ -93,13 +87,12 @@ public class TestPair {
 
 		assertEquals(2, qmatrix.size());
 
-		assertEquals((int) 1, (int) qmatrix.get(new Pair<>(aKey, Move.DOWN)));
-		assertEquals((int) 2, (int) qmatrix.get(new Pair<>(bKey, Move.UP)));
+		assertEquals(1, (int) qmatrix.get(new Pair<>(aKey, Move.DOWN)));
+		assertEquals(2, (int) qmatrix.get(new Pair<>(bKey, Move.UP)));
 	}
 
 	@Test
-	public void equalsContract()
-	{
+	public void equalsContract() {
 		EqualsVerifier.forClass(Pair.class)
 				.suppress(Warning.NONFINAL_FIELDS)
 				.verify();

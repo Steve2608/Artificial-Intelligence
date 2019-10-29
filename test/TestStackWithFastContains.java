@@ -7,17 +7,15 @@ import static org.junit.Assert.assertTrue;
 
 public class TestStackWithFastContains {
 	@Test
-	public void works()
-	{
-		StackWithFastContains<Integer> swfc = new StackWithFastContains<Integer>();
-		Random random = new Random();
-		
+	public void works() {
+		final StackWithFastContains<Integer> swfc = new StackWithFastContains<Integer>();
+		final Random random = new Random();
+
 		swfc.push(0);
-		for(int i = 0; i < 100; i++)
-		{
+		for (int i = 0; i < 100; i++) {
 			swfc.push(random.nextInt(1000) + 1);
 		}
-		
+
 		assertTrue(swfc.contains(0));
 	}
 }

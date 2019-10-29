@@ -6,11 +6,19 @@ import static org.junit.Assert.*;
 
 public class TestPath {
 
+	private static void pathEqualsTest(final Path p1, final Path p2) {
+		assertEquals(p1.pos, p2.pos);
+		assertEquals(p1.rep, p2.rep);
+		assertEquals(p1.isPassable, p2.isPassable);
+		assertEquals(p1.isRemovable, p2.isRemovable);
+		assertEquals(p1.stopsRainbow, p2.stopsRainbow);
+	}
+
 	@Test
 	public void testPathV() {
-		Path p1 = new Path(new V(1,1));
-		assertEquals(new V(1,1),p1.pos);
-		assertEquals('.',p1.rep);
+		final Path p1 = new Path(new V(1, 1));
+		assertEquals(new V(1, 1), p1.pos);
+		assertEquals('.', p1.rep);
 		assertTrue(p1.isPassable);
 		assertFalse(p1.isRemovable);
 		assertFalse(p1.stopsRainbow);
@@ -18,24 +26,15 @@ public class TestPath {
 
 	@Test
 	public void testPathPath() {
-		Path p1 = new Path(new V(1,1));
-		Path p2 = new Path(p1);
-		pathEqualsTest(p1,p2);
+		final Path p1 = new Path(new V(1, 1));
+		final Path p2 = new Path(p1);
+		pathEqualsTest(p1, p2);
 	}
 
 	@Test
 	public void testToStringAndBack() {
-		Path p1 = new Path(new V(1,1));
-		Path p2 = Path.fromString(p1.toString());
-		pathEqualsTest(p1,p2);
-	}
-	
-	private static void pathEqualsTest(Path p1, Path p2)
-	{
-		assertEquals(p1.pos,p2.pos);
-		assertEquals(p1.rep,p2.rep);
-		assertEquals(p1.isPassable,p2.isPassable);
-		assertEquals(p1.isRemovable,p2.isRemovable);
-		assertEquals(p1.stopsRainbow,p2.stopsRainbow);
+		final Path p1 = new Path(new V(1, 1));
+		final Path p2 = Path.fromString(p1.toString());
+		pathEqualsTest(p1, p2);
 	}
 }

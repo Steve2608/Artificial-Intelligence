@@ -47,7 +47,7 @@ public class AlphaBetaSearch implements AdversarialSearch {
 			val = min(n, depth + 1, best, beta);
 			if (val > best) {
 				best = val;
-				if (best >= beta) break;
+				if (best >= beta) return best;
 			}
 		}
 		return best;
@@ -62,7 +62,7 @@ public class AlphaBetaSearch implements AdversarialSearch {
 			val = max(n, depth + 1, alpha, best);
 			if (val < best) {
 				best = val;
-				if (best <= alpha) break;
+				if (best <= alpha) return best;
 			}
 		}
 		return best;

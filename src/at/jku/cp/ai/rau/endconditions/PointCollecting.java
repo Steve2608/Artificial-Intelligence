@@ -7,7 +7,10 @@ import at.jku.cp.ai.rau.objects.Unicorn;
 import at.jku.cp.ai.search.datastructures.Pair;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 final public class PointCollecting implements EndCondition, Serializable {
 	private static final long serialVersionUID = 1L;
@@ -82,11 +85,7 @@ final public class PointCollecting implements EndCondition, Serializable {
 	}
 
 	public int getScore(final int unicorn_id) {
-		if (scores.containsKey(unicorn_id)) {
-			return scores.get(unicorn_id);
-		} else {
-			return 0;
-		}
+		return scores.getOrDefault(unicorn_id, 0);
 	}
 
 	@Override
@@ -108,12 +107,7 @@ final public class PointCollecting implements EndCondition, Serializable {
 				sorted.add(new Pair<>(unicorn_id, score));
 			}
 
-			Collections.sort(sorted, new Comparator<Pair<Integer, Integer>>() {
-				@Override
-				public int compare(final Pair<Integer, Integer> o1, final Pair<Integer, Integer> o2) {
-					return -1 * Integer.compare(o1.s, o2.s);
-				}
-			});
+			sorted.sort((o1, o2) -> -Integer.compare(o1.s, o2.s));
 
 			if (sorted.size() == 0 || sorted.get(0).s.equals(sorted.get(1).s)) {
 				return -1;

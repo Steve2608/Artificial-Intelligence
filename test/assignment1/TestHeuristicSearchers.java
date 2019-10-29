@@ -29,22 +29,21 @@ import java.util.function.Predicate;
 
 @RunWith(Parameterized.class)
 public class TestHeuristicSearchers {
-	@Parameters
-	public static Collection<Object[]> generateParams() {
-		List<Object[]> params = new ArrayList<Object[]>();
-		for (int i = 0; i < Constants.NUMBER_OF_LEVELS; i++) {
-			params.add(new Object[] {i});
-		}
-		return params;
-	}
-
 	@Rule
 	public Timeout timeout = Timeout.seconds(1);
-	
 	private String pathToLevel;
 
-	public TestHeuristicSearchers(Integer i) {
+	public TestHeuristicSearchers(final Integer i) {
 		pathToLevel = String.format(Constants.ASSET_PATH + "/assignment1/L%d", i);
+	}
+
+	@Parameters
+	public static Collection<Object[]> generateParams() {
+		final List<Object[]> params = new ArrayList<Object[]>();
+		for (int i = 0; i < Constants.NUMBER_OF_LEVELS; i++) {
+			params.add(new Object[]{i});
+		}
+		return params;
 	}
 
 	@Test
@@ -56,11 +55,11 @@ public class TestHeuristicSearchers {
 				new DistanceHeuristic(
 						board -> board.getCurrentUnicorn().pos,
 						board -> board.getFountains().get(0).pos,
-						(a, b) -> V.euclidean(a, b)
+						V::euclidean
 				),
 				PathUtils.fromFile(pathToLevel + "/gbfs_ec.path"));
 	}
-	
+
 	@Test
 	public void testGBFSforManhattanDistance() throws Exception {
 		testSearcherForLevel(
@@ -75,24 +74,24 @@ public class TestHeuristicSearchers {
 				PathUtils.fromFile(pathToLevel + "/gbfs_mh.path"));
 	}
 
-	private void testSearcherForLevel(IBoard board, Class<?> nodeClazz, Class<?> searcherClazz, Function<Node, Double> heuristic, List<V> expectedPath) throws Exception {
-		IBoard startBoard = board.copy();
+	private void testSearcherForLevel(final IBoard board, final Class<?> nodeClazz, final Class<?> searcherClazz, final Function<Node, Double> heuristic, final List<V> expectedPath) throws Exception {
+		final IBoard startBoard = board.copy();
 		final Fountain end = board.getFountains().get(0);
 
-		Predicate<Node> endReached = new IBoardPredicate(
+		final Predicate<Node> endReached = new IBoardPredicate(
 				b -> b.isRunning() && b.getCurrentUnicorn().pos.equals(end.pos));
 
-		List<Move> expectedMoveSequence = PathUtils.vsToMoves(expectedPath);
-		List<IBoard> expectedBoardStates = PathUtils.movesToIBoards(expectedMoveSequence, board.copy());
+		final List<Move> expectedMoveSequence = PathUtils.vsToMoves(expectedPath);
+		final List<IBoard> expectedBoardStates = PathUtils.movesToIBoards(expectedMoveSequence, board.copy());
 
-		Search searcher = (Search) searcherClazz.getDeclaredConstructor(Function.class).newInstance(heuristic);
-		Node startNode = (Node) nodeClazz.getDeclaredConstructor(IBoard.class).newInstance(startBoard);
-		Node endNode = searcher.search(startNode, endReached);
+		final Search searcher = (Search) searcherClazz.getDeclaredConstructor(Function.class).newInstance(heuristic);
+		final Node startNode = (Node) nodeClazz.getDeclaredConstructor(IBoard.class).newInstance(startBoard);
+		final Node endNode = searcher.search(startNode, endReached);
 
-		List<Node> path = PathUtils.getPath(endNode);
-		List<IBoard> actualBoardStates = PathUtils.getStates(path);
-		List<Move> actualMoveSequence = PathUtils.getActions(path);
-		
+		final List<Node> path = PathUtils.getPath(endNode);
+		final List<IBoard> actualBoardStates = PathUtils.getStates(path);
+		final List<Move> actualMoveSequence = PathUtils.getActions(path);
+
 		TestUtils.assertListEquals(expectedBoardStates, actualBoardStates);
 		TestUtils.assertListEquals(expectedMoveSequence, actualMoveSequence);
 	}

@@ -31,33 +31,27 @@ import java.util.function.Predicate;
 import static org.junit.Assert.fail;
 
 @RunWith(Parameterized.class)
-public class TestUninformedSearchers
-{
-	@Parameters
-	public static Collection<Object[]> generateParams()
-	{
-		List<Object[]> params = new ArrayList<Object[]>();
-		for (int i = 0; i < Constants.NUMBER_OF_LEVELS; i++)
-		{
-			params.add(new Object[] { new Integer(i) });
-		}
-		return params;
-	}
-	
+public class TestUninformedSearchers {
 	@Rule
 	public Timeout timeout = Timeout.seconds(40);
-
-
 	private String pathToLevel;
 
-	public TestUninformedSearchers(Integer i)
-	{
+
+	public TestUninformedSearchers(final Integer i) {
 		pathToLevel = String.format(Constants.ASSET_PATH + "/assignment1/L%d", i);
 	}
 
+	@Parameters
+	public static Collection<Object[]> generateParams() {
+		final List<Object[]> params = new ArrayList<Object[]>();
+		for (int i = 0; i < Constants.NUMBER_OF_LEVELS; i++) {
+			params.add(new Object[]{i});
+		}
+		return params;
+	}
+
 	@Test
-	public void testBFS() throws Exception
-	{
+	public void testBFS() throws Exception {
 		testSearcherForLevel(
 				Board.fromLevelFile(pathToLevel + "/level"),
 				PathUtils.fromFile(pathToLevel + "/bfs.path"),
@@ -66,9 +60,8 @@ public class TestUninformedSearchers
 	}
 
 	@Test
-	public void testIDS() throws Exception
-	{
-		List<V> pathToGoal = PathUtils.fromFile(pathToLevel + "/bfs.path");
+	public void testIDS() throws Exception {
+		final List<V> pathToGoal = PathUtils.fromFile(pathToLevel + "/bfs.path");
 		testSearcherForLevel(
 				Board.fromLevelFile(pathToLevel + "/level"),
 				pathToGoal,
@@ -78,8 +71,7 @@ public class TestUninformedSearchers
 	}
 
 	@Test
-	public void testDFS() throws Exception
-	{
+	public void testDFS() throws Exception {
 		testSearcherForLevel(
 				Board.fromLevelFile(pathToLevel + "/level"),
 				PathUtils.fromFile(pathToLevel + "/dfs.path"),
@@ -87,21 +79,19 @@ public class TestUninformedSearchers
 				new DLDFS(40));
 	}
 
-	private void testSearcherForLevel(IBoard board, List<V> expectedPath, Class<?> nodeClazz, Search searcher) throws Exception
-	{
-		IBoard startBoard = board.copy();
+	private void testSearcherForLevel(final IBoard board, final List<V> expectedPath, final Class<?> nodeClazz, final Search searcher) throws Exception {
+		final IBoard startBoard = board.copy();
 		final Fountain end = board.getFountains().get(0);
 
-		Predicate<Node> endReached = new IBoardPredicate(b -> b.isRunning() && b.getCurrentUnicorn().pos.equals(end.pos));
+		final Predicate<Node> endReached = new IBoardPredicate(b -> b.isRunning() && b.getCurrentUnicorn().pos.equals(end.pos));
 
-		List<Move> expectedMoveSequence = PathUtils.vsToMoves(expectedPath);
-		List<IBoard> expectedBoardStates = PathUtils.movesToIBoards(expectedMoveSequence, board.copy());
+		final List<Move> expectedMoveSequence = PathUtils.vsToMoves(expectedPath);
+		final List<IBoard> expectedBoardStates = PathUtils.movesToIBoards(expectedMoveSequence, board.copy());
 
-		Node startNode = (Node) nodeClazz.getDeclaredConstructor(IBoard.class).newInstance(startBoard);
-		Node endNode = searcher.search(startNode, endReached);
+		final Node startNode = (Node) nodeClazz.getDeclaredConstructor(IBoard.class).newInstance(startBoard);
+		final Node endNode = searcher.search(startNode, endReached);
 
-		if (null == endNode)
-		{
+		if (null == endNode) {
 			fail("goal not found!");
 		}
 
@@ -109,11 +99,11 @@ public class TestUninformedSearchers
 		// System.out.println(RenderUtils.visualizePath(startBoard,
 		// PathUtils.getPath(endNode)));
 
-		List<Node> path = PathUtils.getPath(endNode);
-		List<IBoard> actualBoardStates = PathUtils.getStates(path);
+		final List<Node> path = PathUtils.getPath(endNode);
+		final List<IBoard> actualBoardStates = PathUtils.getStates(path);
 		TestUtils.assertListEquals(expectedBoardStates, actualBoardStates);
 
-		List<Move> actualMoveSequence = PathUtils.getActions(path);
+		final List<Move> actualMoveSequence = PathUtils.getActions(path);
 		TestUtils.assertListEquals(expectedMoveSequence, actualMoveSequence);
 	}
 }

@@ -7,11 +7,11 @@ import java.util.Random;
 public class BayesNetSampler {
 
 	// topological ordering used for sampling
-	List<String> topologicalOrdering;
+	private List<String> topologicalOrdering;
 	// stores the conditional probability table for each node of the Bayes Net
-	HashMap<String, NodeProbabilityTable> conditionalProbabilityTable;
+	private HashMap<String, NodeProbabilityTable> conditionalProbabilityTable;
 	// stores for each variable on which other variables it depends on
-	HashMap<String, List<String>> conditionedOn;
+	private HashMap<String, List<String>> conditionedOn;
 
 	public BayesNetSampler(final List<String> topologicalOrdering) {
 		this.topologicalOrdering = topologicalOrdering;
@@ -40,14 +40,13 @@ public class BayesNetSampler {
 		final HashMap<String, Boolean> sample = new HashMap<>();
 		for (final String s : topologicalOrdering) {
 			final List<String> lookup = conditionedOn.get(s);
-			String cond = "";
+			final StringBuilder cond = new StringBuilder();
 			if (lookup != null) {
 				for (final String l : lookup) {
-					final Boolean b = sample.get(l);
-					cond += b ? "1" : "0";
+					cond.append(sample.get(l) ? "1" : "0");
 				}
 			}
-			final Double p = conditionalProbabilityTable.get(s).getProbability(cond);
+			final Double p = conditionalProbabilityTable.get(s).getProbability(cond.toString());
 			sample.put(s, random.nextDouble() < p);
 		}
 		return sample;

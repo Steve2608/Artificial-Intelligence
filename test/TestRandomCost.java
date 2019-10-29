@@ -17,31 +17,28 @@ import java.util.Random;
 
 import static org.junit.Assert.assertEquals;
 
-public class TestRandomCost
-{
+public class TestRandomCost {
 	@Test
-	public void persist() throws Exception
-	{
-		IBoard blank = new BlankLevel(11, 11);
-		RandomCost expected = new RandomCost(11, 11, new Random(23L), 10);
-		
-		String temp = Files.createTempFile(null, null).toString();
-		
+	public void persist() throws Exception {
+		final IBoard blank = new BlankLevel(11, 11);
+		final RandomCost expected = new RandomCost(11, 11, new Random(23L), 10);
+
+		final String temp = Files.createTempFile(null, null).toString();
+
 		Files.write(
-				Paths.get(temp), 
+				Paths.get(temp),
 				expected.render(blank).getBytes(),
 				StandardOpenOption.CREATE);
-		
-		List<String> costs = Files.readAllLines(Paths.get(temp), StandardCharsets.UTF_8);
-		
-		LevelCost actual = new LevelCost(costs);
-		
+
+		final List<String> costs = Files.readAllLines(Paths.get(temp), StandardCharsets.UTF_8);
+
+		final LevelCost actual = new LevelCost(costs);
+
 		blank.getUnicorns().add(new Unicorn(new V(1, 1), 0));
-		for(Path p: blank.getPaths())
-		{
+		for (final Path p : blank.getPaths()) {
 			// put the unicorn on each walking path ...
 			blank.getUnicorns().get(0).pos = p.pos;
-			IBoardNode blankNode = new IBoardNode(blank);
+			final IBoardNode blankNode = new IBoardNode(blank);
 			assertEquals(expected.apply(blankNode), actual.apply(blankNode), 0.0);
 		}
 	}

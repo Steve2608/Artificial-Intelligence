@@ -10,18 +10,16 @@ import java.util.Arrays;
 
 import static org.junit.Assert.*;
 
-public class TestPointCollecting
-{
+public class TestPointCollecting {
 	@Test
-	public void doesNotCrashIfNoFountains()
-	{
-		IBoard board = Board.fromLevelRepresentation(
+	public void doesNotCrashIfNoFountains() {
+		final IBoard board = Board.fromLevelRepresentation(
 				Arrays.asList(
 						"####",
 						"#p.#",
 						"####"));
 
-		PointCollecting fc = new PointCollecting();
+		final PointCollecting fc = new PointCollecting();
 		board.setEndCondition(fc);
 
 		board.executeMove(Move.RIGHT);
@@ -31,15 +29,14 @@ public class TestPointCollecting
 	}
 
 	@Test
-	public void oneUnicornOneFlag()
-	{
-		IBoard board = Board.fromLevelRepresentation(
+	public void oneUnicornOneFlag() {
+		final IBoard board = Board.fromLevelRepresentation(
 				Arrays.asList(
 						"####",
 						"#pf#",
 						"####"));
 
-		PointCollecting fc = new PointCollecting();
+		final PointCollecting fc = new PointCollecting();
 		board.setEndCondition(fc);
 
 		assertEquals(-1, board.getFountains().get(0).lastVisitedBy);
@@ -52,14 +49,13 @@ public class TestPointCollecting
 	}
 
 	@Test
-	public void twoUnicornsOneFlag()
-	{
-		IBoard board = Board.fromLevelRepresentation(
+	public void twoUnicornsOneFlag() {
+		final IBoard board = Board.fromLevelRepresentation(
 				Arrays.asList(
 						"#####",
 						"#pfp#",
 						"#####"));
-		PointCollecting fc = new PointCollecting();
+		final PointCollecting fc = new PointCollecting();
 		board.setEndCondition(fc);
 
 		assertEquals(-1, board.getFountains().get(0).lastVisitedBy);
@@ -87,14 +83,13 @@ public class TestPointCollecting
 	}
 
 	@Test
-	public void twoUnicornsOneFlagDraw()
-	{
-		IBoard board = Board.fromLevelRepresentation(
+	public void twoUnicornsOneFlagDraw() {
+		final IBoard board = Board.fromLevelRepresentation(
 				Arrays.asList(
 						"#####",
 						"#pfp#",
 						"#####"));
-		PointCollecting fc = new PointCollecting();
+		final PointCollecting fc = new PointCollecting();
 		board.setEndCondition(fc);
 
 		assertEquals(-1, board.getFountains().get(0).lastVisitedBy);
@@ -128,16 +123,15 @@ public class TestPointCollecting
 	}
 
 	@Test
-	public void twoUnicornsOnOneFlagSimultaenously()
-	{
-		BoardWithHistory board = new BoardWithHistory(
+	public void twoUnicornsOnOneFlagSimultaenously() {
+		final BoardWithHistory board = new BoardWithHistory(
 				Board.fromLevelRepresentation(
 						Arrays.asList(
 								"#####",
 								"#pfp#",
 								"#####")));
 
-		PointCollecting fc = new PointCollecting();
+		final PointCollecting fc = new PointCollecting();
 		board.setEndCondition(fc);
 
 		assertEquals(Fountain.LAST_VISITED_BY_DEFAULT,
@@ -165,21 +159,20 @@ public class TestPointCollecting
 	}
 
 	@Test
-	public void moveLimit()
-	{
-		BoardWithHistory board = new BoardWithHistory(
+	public void moveLimit() {
+		final BoardWithHistory board = new BoardWithHistory(
 				Board.fromLevelRepresentation(
 						Arrays.asList(
 								"#######",
 								"#p.f.p#",
 								"#######")));
 
-		PointCollecting fc = new PointCollecting(2);
+		final PointCollecting fc = new PointCollecting(2);
 		board.setEndCondition(fc);
 
 		// tick 0
 		assertTrue(board.executeMove(Move.RIGHT));
-		
+
 		// tick 1
 		assertTrue(board.executeMove(Move.STAY));
 
@@ -188,7 +181,7 @@ public class TestPointCollecting
 
 		assertFalse(board.isRunning());
 		assertEquals(2, board.getTick());
-		
+
 		// player 0 won
 		assertEquals(0, board.getEndCondition().getWinner());
 
@@ -196,5 +189,5 @@ public class TestPointCollecting
 		assertEquals(1, fc.getScore(0));
 		assertEquals(0, fc.getScore(1));
 	}
-	
+
 }

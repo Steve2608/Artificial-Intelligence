@@ -26,9 +26,8 @@ public class UCS implements Search {
 		fringe.add(new Pair<>(cost.apply(start), start));
 		final Set<Node> closed = new HashSet<>();
 
-		Pair<Double, Node> curr;
 		do {
-			curr = fringe.poll();
+			final Pair<Double, Node> curr = fringe.poll();
 			closed.add(curr.s);
 			for (final Node n : curr.s.adjacent()) {
 				if (!closed.contains(n)) {

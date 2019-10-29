@@ -1,5 +1,7 @@
+# IntelliJ Stuff
 .idea/
 out/
+Artificial-Intelligence.iml
 
 # unpack assets.zip
 assets/

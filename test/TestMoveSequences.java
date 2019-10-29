@@ -14,46 +14,54 @@ import java.util.List;
 import static org.junit.Assert.fail;
 
 @RunWith(Parameterized.class)
-public class TestMoveSequences
-{
-	@Parameters
-	public static Collection<Object[]> generateParams()
-	{
-		List<Object[]> params = new ArrayList<Object[]>();
+public class TestMoveSequences {
+	private Board masterBoard;
+	private List<Move> path;
+	private List<List<Move>> expectedValid;
 
-		params.add(new Object[] {
+	public TestMoveSequences(final List<String> lvl, final List<Move> path, final List<List<Move>> expected) {
+		masterBoard = Board.fromLevelRepresentation(lvl);
+		this.path = path;
+		expectedValid = expected;
+	}
+
+	@Parameters
+	public static Collection<Object[]> generateParams() {
+		final List<Object[]> params = new ArrayList<Object[]>();
+
+		params.add(new Object[]{
 				Arrays.asList(
 						"#######",
 						"#.....#",
 						"#..p..#",
 						"#.....#",
 						"#######"
-						),
+				),
 				Arrays.asList(Move.STAY, Move.STAY),
 				Arrays.asList(
 						Arrays.asList(Move.values()),
 						Arrays.asList(Move.values())
-						)
+				)
 		});
 
-		params.add(new Object[] {
+		params.add(new Object[]{
 				Arrays.asList(
 						"###",
 						"#p#",
 						"#.###",
 						"#...#",
 						"#####"
-						),
+				),
 				Arrays.asList(Move.DOWN, Move.DOWN, Move.RIGHT, Move.RIGHT),
 				Arrays.asList(
 						Arrays.asList(Move.STAY, Move.SPAWN, Move.DOWN),
 						Arrays.asList(Move.STAY, Move.SPAWN, Move.UP, Move.DOWN),
 						Arrays.asList(Move.STAY, Move.SPAWN, Move.UP, Move.RIGHT),
 						Arrays.asList(Move.STAY, Move.SPAWN, Move.LEFT, Move.RIGHT)
-						)
+				)
 		});
 
-		params.add(new Object[] {
+		params.add(new Object[]{
 				Arrays.asList(
 						"##########",
 						"#p#......#",
@@ -62,7 +70,7 @@ public class TestMoveSequences
 						"#.#.######",
 						"#........#",
 						"##########"
-						),
+				),
 				Arrays.asList(Move.DOWN, Move.DOWN, Move.RIGHT, Move.RIGHT, Move.RIGHT, Move.RIGHT),
 				Arrays.asList(
 						Arrays.asList(Move.STAY, Move.SPAWN, Move.DOWN),
@@ -71,66 +79,46 @@ public class TestMoveSequences
 						Arrays.asList(Move.STAY, Move.SPAWN, Move.LEFT, Move.RIGHT),
 						Arrays.asList(Move.STAY, Move.SPAWN, Move.UP, Move.DOWN, Move.LEFT, Move.RIGHT),
 						Arrays.asList(Move.STAY, Move.SPAWN, Move.LEFT, Move.RIGHT)
-						)
+				)
 		});
 
 		return params;
 	}
 
-	private Board masterBoard;
-	private List<Move> path;
-	private List<List<Move>> expectedValid;
-
-	public TestMoveSequences(List<String> lvl, List<Move> path, List<List<Move>> expected)
-	{
-		this.masterBoard = Board.fromLevelRepresentation(lvl);
-		this.path = path;
-		this.expectedValid = expected;
-	}
-
 	@Test
-	public void completeMoveSequencePossible()
-	{
-		IBoard board = masterBoard.copy();
-		for (int i = 0; i < path.size(); i++)
-		{
-			List<Move> current = expectedValid.get(i);
+	public void completeMoveSequencePossible() {
+		final IBoard board = masterBoard.copy();
+		for (int i = 0; i < path.size(); i++) {
+			final List<Move> current = expectedValid.get(i);
 			allMovesActuallyPossible(board, current);
-			Move move = path.get(i);
+			final Move move = path.get(i);
 			board.executeMove(move);
 		}
 	}
 
-	private void allMovesActuallyPossible(IBoard testBoard, List<Move> currentExpectedValid)
-	{
-		for (Move move : currentExpectedValid)
-		{
-			IBoard board = testBoard.copy();
+	private void allMovesActuallyPossible(final IBoard testBoard, final List<Move> currentExpectedValid) {
+		for (final Move move : currentExpectedValid) {
+			final IBoard board = testBoard.copy();
 
 			// ***can't*** execute valid move? --> goto fail!
-			if (!board.executeMove(move))
-			{
+			if (!board.executeMove(move)) {
 				fail("could NOT execute '" + move + "' !");
 			}
 		}
 
-		List<Move> expectedInvalid = new ArrayList<>();
+		final List<Move> expectedInvalid = new ArrayList<>();
 
-		for (Move move : Move.values())
-		{
-			if (!currentExpectedValid.contains(move))
-			{
+		for (final Move move : Move.values()) {
+			if (!currentExpectedValid.contains(move)) {
 				expectedInvalid.add(move);
 			}
 		}
 
-		for (Move move : expectedInvalid)
-		{
-			IBoard board = testBoard.copy();
+		for (final Move move : expectedInvalid) {
+			final IBoard board = testBoard.copy();
 
 			// ***can*** execute invalid move? --> goto fail!
-			if (board.executeMove(move))
-			{
+			if (board.executeMove(move)) {
 				fail("could execute '" + move + "' despite being forbidden !");
 			}
 		}

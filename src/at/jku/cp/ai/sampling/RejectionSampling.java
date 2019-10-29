@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 public class RejectionSampling {
 
-	BayesNetSampler bn;
+	private BayesNetSampler bn;
 
 	public RejectionSampling(final BayesNetSampler bn) {
 		this.bn = bn;

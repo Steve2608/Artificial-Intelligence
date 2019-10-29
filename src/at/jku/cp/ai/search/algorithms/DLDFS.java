@@ -23,14 +23,13 @@ public class DLDFS implements Search {
 
 	private Node dls(final Node root, final Predicate<Node> endPredicate, final int depth) {
 		if (endPredicate.test(root)) return root;
-		path.push(root);
+		if (depth <= 0) return null;
 
-		if (depth > 0) {
-			for (final Node n : root.adjacent()) {
-				if (!path.contains(n)) {
-					final Node result = dls(n, endPredicate, depth - 1);
-					if (result != null) return result;
-				}
+		path.push(root);
+		for (final Node n : root.adjacent()) {
+			if (!path.contains(n)) {
+				final Node result = dls(n, endPredicate, depth - 1);
+				if (result != null) return result;
 			}
 		}
 		path.pop();

@@ -7,8 +7,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-public class TestStablePriorityQueue
-{
+public class TestStablePriorityQueue {
 
 	List<Pair<Integer, String>> expected = Arrays.asList(
 			new Pair<>(1, "A"),
@@ -19,27 +18,23 @@ public class TestStablePriorityQueue
 			new Pair<>(4, "F"));
 
 	@Test
-	public void testOrdering1()
-	{
-		StablePriorityQueue<Integer, String> pq = new StablePriorityQueue<>();
+	public void testOrdering1() {
+		final StablePriorityQueue<Integer, String> pq = new StablePriorityQueue<>();
 
-		for (Pair<Integer, String> p : expected)
-		{
+		for (final Pair<Integer, String> p : expected) {
 			pq.add(p);
 		}
 
-		for (Pair<Integer, String> p : expected)
-		{
+		for (final Pair<Integer, String> p : expected) {
 			assertEquals(p, pq.poll());
 		}
 	}
 
 	@Test
-	public void testOrdering2()
-	{
-		StablePriorityQueue<Integer, String> pq = new StablePriorityQueue<>();
+	public void testOrdering2() {
+		final StablePriorityQueue<Integer, String> pq = new StablePriorityQueue<>();
 
-		List<Pair<Integer, String>> fixture = Arrays.asList(
+		final List<Pair<Integer, String>> fixture = Arrays.asList(
 				new Pair<>(1, "A"),
 				new Pair<>(2, "D"),
 				new Pair<>(3, "E"),
@@ -47,23 +42,20 @@ public class TestStablePriorityQueue
 				new Pair<>(4, "F"),
 				new Pair<>(1, "C"));
 
-		for (Pair<Integer, String> p : fixture)
-		{
+		for (final Pair<Integer, String> p : fixture) {
 			pq.add(p);
 		}
 
-		for (Pair<Integer, String> p : expected)
-		{
+		for (final Pair<Integer, String> p : expected) {
 			assertEquals(p, pq.poll());
 		}
 	}
 
 	@Test
-	public void testOrdering3()
-	{
-		StablePriorityQueue<Integer, String> pq = new StablePriorityQueue<>();
+	public void testOrdering3() {
+		final StablePriorityQueue<Integer, String> pq = new StablePriorityQueue<>();
 
-		List<Pair<Integer, String>> fixture = Arrays.asList(
+		final List<Pair<Integer, String>> fixture = Arrays.asList(
 				new Pair<>(4, "F"),
 				new Pair<>(2, "D"),
 				new Pair<>(1, "A"),
@@ -71,23 +63,20 @@ public class TestStablePriorityQueue
 				new Pair<>(3, "E"),
 				new Pair<>(1, "C"));
 
-		for (Pair<Integer, String> p : fixture)
-		{
+		for (final Pair<Integer, String> p : fixture) {
 			pq.add(p);
 		}
 
-		for (Pair<Integer, String> p : expected)
-		{
+		for (final Pair<Integer, String> p : expected) {
 			assertEquals(p, pq.poll());
 		}
 	}
 
 	@Test
-	public void testOrderingViaAddAll()
-	{
-		StablePriorityQueue<Integer, String> pq = new StablePriorityQueue<>();
+	public void testOrderingViaAddAll() {
+		final StablePriorityQueue<Integer, String> pq = new StablePriorityQueue<>();
 
-		List<Pair<Integer, String>> fixture = Arrays.asList(
+		final List<Pair<Integer, String>> fixture = Arrays.asList(
 				new Pair<>(4, "F"),
 				new Pair<>(1, "A"),
 				new Pair<>(2, "D"),
@@ -97,8 +86,7 @@ public class TestStablePriorityQueue
 
 		pq.addAll(fixture);
 
-		for (Pair<Integer, String> p : expected)
-		{
+		for (final Pair<Integer, String> p : expected) {
 			assertEquals(p, pq.poll());
 		}
 	}

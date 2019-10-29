@@ -47,9 +47,7 @@ public class RenderUtils {
 						sb.append(' ');
 					}
 				} else {
-					for (int x = 0; x < board.getWidth(); x++) {
-						sb.append("  ");
-					}
+					sb.append("  ".repeat(board.getWidth()));
 				}
 				sb.append(' ');
 			}
@@ -95,9 +93,7 @@ public class RenderUtils {
 						sb.append(String.format("%2s", cell));
 					}
 				} else {
-					for (int x = 0; x < board.getWidth(); x++) {
-						sb.append("  ");
-					}
+					sb.append("  ".repeat(board.getWidth()));
 				}
 				sb.append(' ');
 			}
@@ -143,8 +139,8 @@ public class RenderUtils {
 
 		final String separator = System.getProperty("line.separator");
 		for (int y = 0; y < rep[0].length; y++) {
-			for (int x = 0; x < rep.length; x++) {
-				sb.append(rep[x][y]);
+			for (final char[] chars : rep) {
+				sb.append(chars[y]);
 			}
 			sb.append(separator);
 		}

@@ -92,7 +92,6 @@ public class PathUtils {
 			System.out.println("---------------------");
 			System.out.println(String.format("exmove %5s excost %.1f acmove %5s accost %.1f", expectedMove, expectedCost, actualMove, actualCost));
 			System.out.println(RenderUtils.column(heuristic, cost, expectedBoard, actualBoard));
-
 		}
 	}
 
@@ -113,9 +112,8 @@ public class PathUtils {
 	public static List<IBoard> movesToIBoards(final List<Move> path, final IBoard board) {
 		final List<IBoard> nodes = new ArrayList<>();
 
-		final IBoard start = board;
 		if (path.size() > 0) {
-			nodes.add(start);
+			nodes.add(board);
 
 			final IBoard current = board.copy();
 

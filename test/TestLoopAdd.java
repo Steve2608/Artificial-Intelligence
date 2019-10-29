@@ -18,15 +18,15 @@ public class TestLoopAdd {
 
 	@Test
 	public void loopAdd() {
-		Queue<Integer> queue = new LinkedList<>();
-		for (int x : source) {
+		final Queue<Integer> queue = new LinkedList<>();
+		for (final int x : source) {
 			queue.add(x);
 		}
 	}
 
 	@Test
 	public void loopAdd2() {
-		Queue<Integer> queue = new LinkedList<>();
+		final Queue<Integer> queue = new LinkedList<>();
 		queue.addAll(source);
 	}
 }

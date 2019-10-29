@@ -30,22 +30,21 @@ import java.util.function.Predicate;
 
 @RunWith(Parameterized.class)
 public class TestHeuristicAndCostSearchers {
-	@Parameters
-	public static Collection<Object[]> generateParams() {
-		List<Object[]> params = new ArrayList<Object[]>();
-		for (int i = 0; i < Constants.NUMBER_OF_LEVELS; i++) {
-			params.add(new Object[] { new Integer(i) });
-		}
-		return params;
-	}
-
 	@Rule
 	public Timeout timeout = Timeout.seconds(1);
-	
 	private String pathToLevel;
 
-	public TestHeuristicAndCostSearchers(Integer i) {
+	public TestHeuristicAndCostSearchers(final Integer i) {
 		pathToLevel = String.format(Constants.ASSET_PATH + "/assignment1/L%d", i);
+	}
+
+	@Parameters
+	public static Collection<Object[]> generateParams() {
+		final List<Object[]> params = new ArrayList<Object[]>();
+		for (int i = 0; i < Constants.NUMBER_OF_LEVELS; i++) {
+			params.add(new Object[]{i});
+		}
+		return params;
 	}
 
 	@Test
@@ -79,44 +78,43 @@ public class TestHeuristicAndCostSearchers {
 	}
 
 	private void testSearcherForLevel(
-			IBoard board,
-			Class<?> nodeClazz,
-			Class<?> searcherClazz,
-			Function<Node, Double> heuristic,
-			Function<Node, Double> cost,
-			List<V> expectedPath) throws Exception {
+			final IBoard board,
+			final Class<?> nodeClazz,
+			final Class<?> searcherClazz,
+			final Function<Node, Double> heuristic,
+			final Function<Node, Double> cost,
+			final List<V> expectedPath) throws Exception {
 
-		IBoard startBoard = board.copy();
+		final IBoard startBoard = board.copy();
 		final Fountain end = board.getFountains().get(0);
 
-		Predicate<Node> endReached = new IBoardPredicate(
+		final Predicate<Node> endReached = new IBoardPredicate(
 				b -> b.isRunning() && b.getCurrentUnicorn().pos.equals(end.pos));
 
-		List<Move> expectedMoveSequence = PathUtils.vsToMoves(expectedPath);
-		List<IBoard> expectedBoardStates = PathUtils.movesToIBoards(expectedMoveSequence, board.copy());
+		final List<Move> expectedMoveSequence = PathUtils.vsToMoves(expectedPath);
+		final List<IBoard> expectedBoardStates = PathUtils.movesToIBoards(expectedMoveSequence, board.copy());
 
-		Search searcher = (Search) searcherClazz.getDeclaredConstructor(Function.class, Function.class).newInstance(heuristic, cost);
-		Node startNode = (Node) nodeClazz.getDeclaredConstructor(IBoard.class).newInstance(startBoard);
-		Node endNode = searcher.search(startNode, endReached);
+		final Search searcher = (Search) searcherClazz.getDeclaredConstructor(Function.class, Function.class).newInstance(heuristic, cost);
+		final Node startNode = (Node) nodeClazz.getDeclaredConstructor(IBoard.class).newInstance(startBoard);
+		final Node endNode = searcher.search(startNode, endReached);
 
-		List<Node> path = PathUtils.getPath(endNode);
-		List<IBoard> actualBoardStates = PathUtils.getStates(path);
-		List<Move> actualMoveSequence = PathUtils.getActions(path);
+		final List<Node> path = PathUtils.getPath(endNode);
+		final List<IBoard> actualBoardStates = PathUtils.getStates(path);
+		final List<Move> actualMoveSequence = PathUtils.getActions(path);
 
-		if (!TestUtils.listEquals(expectedBoardStates, actualBoardStates))
-		{
+		if (!TestUtils.listEquals(expectedBoardStates, actualBoardStates)) {
 			System.out.println("expected : " + expectedMoveSequence);
 			System.out.println("actual   : " + actualMoveSequence);
 
-			double expectedCost = PathUtils.getPathCost(board.copy(), expectedMoveSequence, cost);
-			double actualCost = PathUtils.getPathCost(board.copy(), actualMoveSequence, cost);
+			final double expectedCost = PathUtils.getPathCost(board.copy(), expectedMoveSequence, cost);
+			final double actualCost = PathUtils.getPathCost(board.copy(), actualMoveSequence, cost);
 
 			System.out.println("expected cost : " + expectedCost);
 			System.out.println("actual cost   : " + actualCost);
 
 			PathUtils.comparePathCost(board.copy(), expectedMoveSequence, actualMoveSequence, heuristic, cost);
 		}
-		
+
 		TestUtils.assertListEquals(expectedMoveSequence, actualMoveSequence);
 		TestUtils.assertListEquals(expectedBoardStates, actualBoardStates);
 	}

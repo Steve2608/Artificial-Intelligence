@@ -27,9 +27,8 @@ public class ASTAR implements Search {
 		fringe.add(new Pair<>(new Costs(heuristic.apply(start), cost.apply(start)), start));
 		final Set<Node> closed = new HashSet<>();
 
-		Pair<Costs, Node> curr;
 		do {
-			curr = fringe.poll();
+			final Pair<Costs, Node> curr = fringe.poll();
 			if (endPredicate.test(curr.s)) return curr.s;
 			closed.add(curr.s);
 
