@@ -28,6 +28,9 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 @RunWith(Parameterized.class)
 public class TestHeuristicAndCostSearchers {
 	@Rule
@@ -56,7 +59,7 @@ public class TestHeuristicAndCostSearchers {
 				new DistanceHeuristic(
 						board -> board.getCurrentUnicorn().pos,
 						board -> board.getFountains().get(0).pos,
-						(a, b) -> V.euclidean(a, b)
+						V::euclidean
 				),
 				LevelCost.fromFile(pathToLevel + "/costs"),
 				PathUtils.fromFile(pathToLevel + "/astar_ec.path"));
@@ -84,6 +87,17 @@ public class TestHeuristicAndCostSearchers {
 			final Function<Node, Double> heuristic,
 			final Function<Node, Double> cost,
 			final List<V> expectedPath) throws Exception {
+		testSearcherForLevel(board, nodeClazz, searcherClazz, heuristic, cost, expectedPath, true);
+	}
+
+	private void testSearcherForLevel(
+			final IBoard board,
+			final Class<?> nodeClazz,
+			final Class<?> searcherClazz,
+			final Function<Node, Double> heuristic,
+			final Function<Node, Double> cost,
+			final List<V> expectedPath,
+			final boolean checkPathEquality) throws Exception {
 
 		final IBoard startBoard = board.copy();
 		final Fountain end = board.getFountains().get(0);
@@ -102,20 +116,20 @@ public class TestHeuristicAndCostSearchers {
 		final List<IBoard> actualBoardStates = PathUtils.getStates(path);
 		final List<Move> actualMoveSequence = PathUtils.getActions(path);
 
-		if (!TestUtils.listEquals(expectedBoardStates, actualBoardStates)) {
-			System.out.println("expected : " + expectedMoveSequence);
-			System.out.println("actual   : " + actualMoveSequence);
+		final double expectedCost = PathUtils.getPathCost(board.copy(), expectedMoveSequence, cost);
+		final double actualCost = PathUtils.getPathCost(board.copy(), actualMoveSequence, cost);
+		System.out.println("expected : " + expectedCost);
+		System.out.println("actual   : " + actualCost);
+		assertEquals(expectedCost, actualCost, 0);
 
-			final double expectedCost = PathUtils.getPathCost(board.copy(), expectedMoveSequence, cost);
-			final double actualCost = PathUtils.getPathCost(board.copy(), actualMoveSequence, cost);
+		System.out.println("expected : " + expectedMoveSequence);
+		System.out.println("actual   : " + actualMoveSequence);
+		PathUtils.comparePathCost(board.copy(), expectedMoveSequence, actualMoveSequence, heuristic, cost);
 
-			System.out.println("expected cost : " + expectedCost);
-			System.out.println("actual cost   : " + actualCost);
-
-			PathUtils.comparePathCost(board.copy(), expectedMoveSequence, actualMoveSequence, heuristic, cost);
+		if (checkPathEquality) {
+			assertTrue(TestUtils.listEquals(expectedBoardStates, actualBoardStates));
+			TestUtils.assertListEquals(expectedMoveSequence, actualMoveSequence);
+			TestUtils.assertListEquals(expectedBoardStates, actualBoardStates);
 		}
-
-		TestUtils.assertListEquals(expectedMoveSequence, actualMoveSequence);
-		TestUtils.assertListEquals(expectedBoardStates, actualBoardStates);
 	}
 }

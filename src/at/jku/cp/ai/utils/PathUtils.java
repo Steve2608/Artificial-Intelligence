@@ -70,27 +70,38 @@ public class PathUtils {
 	}
 
 	public static void comparePathCost(final IBoard board, final List<Move> expectedMoves, final List<Move> actualMoves, final Function<Node, Double> heuristic, final Function<Node, Double> cost) {
-		final int nMoves = Math.min(actualMoves.size(), expectedMoves.size());
+		final int nMoves = Math.max(actualMoves.size(), expectedMoves.size());
 		double actualCost = 0.0;
 		double expectedCost = 0.0;
+		double asum = 0.0, esum = 0.0;
 
 		final IBoard actualBoard = board.copy();
 		final IBoard expectedBoard = board.copy();
 
 		for (int i = 0; i < nMoves; i++) {
-			final Node actualNode = new IBoardNode(actualBoard);
-			final Node expectedNode = new IBoardNode(expectedBoard);
-			actualCost = heuristic.apply(actualNode) + cost.apply(actualNode);
-			expectedCost = heuristic.apply(expectedNode) + cost.apply(expectedNode);
+			Move actualMove = null;
+			if (i < actualMoves.size()) {
+				final Node actualNode = new IBoardNode(actualBoard);
+				actualCost = heuristic.apply(actualNode) + cost.apply(actualNode);
+				asum += cost.apply(actualNode);
 
-			final Move actualMove = actualMoves.get(i);
-			actualBoard.executeMove(actualMove);
+				actualMove = actualMoves.get(i);
+				actualBoard.executeMove(actualMove);
+			}
 
-			final Move expectedMove = expectedMoves.get(i);
-			expectedBoard.executeMove(expectedMove);
+			Move expectedMove = null;
+			if (i < expectedMoves.size()) {
+				final Node expectedNode = new IBoardNode(expectedBoard);
+				expectedCost = heuristic.apply(expectedNode) + cost.apply(expectedNode);
+				esum += cost.apply(expectedNode);
+
+				expectedMove = expectedMoves.get(i);
+				expectedBoard.executeMove(expectedMove);
+			}
 
 			System.out.println("---------------------");
-			System.out.println(String.format("exmove %5s excost %.1f acmove %5s accost %.1f", expectedMove, expectedCost, actualMove, actualCost));
+			System.out.println(String.format("Expected cost so far: %.3f; Actual cost so far: %.3f", esum, asum));
+			System.out.println(String.format("exmove %5s excost %.3f acmove %5s accost %.3f", expectedMove, expectedCost, actualMove, actualCost));
 			System.out.println(RenderUtils.column(heuristic, cost, expectedBoard, actualBoard));
 		}
 	}
