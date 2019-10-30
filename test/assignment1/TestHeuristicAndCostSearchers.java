@@ -56,7 +56,7 @@ public class TestHeuristicAndCostSearchers {
 				new DistanceHeuristic(
 						board -> board.getCurrentUnicorn().pos,
 						board -> board.getFountains().get(0).pos,
-						(a, b) -> V.euclidean(a, b)
+						V::euclidean
 				),
 				LevelCost.fromFile(pathToLevel + "/costs"),
 				PathUtils.fromFile(pathToLevel + "/astar_ec.path"));
